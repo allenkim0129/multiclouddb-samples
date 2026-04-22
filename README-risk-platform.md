@@ -1471,8 +1471,8 @@ dashboard header shows which one you're looking at.
 | File | Provider | Target | Auth | Committed? |
 |------|----------|--------|------|------------|
 | `risk-platform-cosmos.properties` | Azure Cosmos DB | `https://localhost:8081` (emulator) | Master key | ✅ Yes |
-| `risk-platform-cosmos-cloud.properties` | Azure Cosmos DB | Azure cloud endpoint | DefaultAzureCredential (Entra ID) | ❌ **No — git-ignored** |
-| `risk-platform-cosmos-cloud.properties.template` | Azure Cosmos DB | *(fill in your values)* | DefaultAzureCredential (Entra ID) | ✅ Yes (no secrets) |
+| `risk-platform-cosmos-cloud.properties` | Azure Cosmos DB | Azure cloud endpoint | Master Key **or** DefaultAzureCredential (Entra ID) | ❌ **No — git-ignored** |
+| `risk-platform-cosmos-cloud.properties.template` | Azure Cosmos DB | *(fill in your values)* | Master Key **or** DefaultAzureCredential (Entra ID) | ✅ Yes (template only) |
 | `risk-platform-dynamo.properties` | Amazon DynamoDB | `http://localhost:8000` (local) | Fake static credentials | ✅ Yes |
 | `risk-platform-dynamo-cloud.properties` | Amazon DynamoDB | AWS DynamoDB service | Default AWS credential chain | ❌ **No — git-ignored** |
 | `risk-platform-dynamo-cloud.properties.template` | Amazon DynamoDB | *(fill in your values)* | Default AWS credential chain | ✅ Yes (no secrets) |
@@ -1874,8 +1874,79 @@ subsequent runs.
 
 #### Create the Cosmos DB Properties File
 
-The cloud properties file is **git-ignored** and must never be committed. Only
-`COSMOS_ACCOUNT` needs to be typed — all other values are fetched automatically.
+The cloud properties file is **git-ignored** and must never be committed.
+
+Choose the authentication method that fits your setup:
+
+| | Option A — Master Key | Option B — Entra ID (DefaultAzureCredential) |
+|---|---|---|
+| **Requires** | Cosmos DB primary key | `az login` + RBAC role assignment |
+| **Setup time** | ~1 minute | ~5 minutes |
+| **Auto-provisioning** | ✅ (with ARM props) or manual | ✅ (ARM props required) |
+| **Recommended for** | Local dev, quick testing | Production, shared environments |
+
+---
+
+##### Option A — Master Key (no `az login` needed)
+
+The simplest setup: just an endpoint and the account's primary key.
+No Azure CLI sign-in, no RBAC role assignment required.
+
+> Get your endpoint and key from the Azure Portal → your Cosmos DB account → **Keys**,
+> or fetch them via Azure CLI:
+> ```bash
+> az cosmosdb show --name <ACCOUNT> --resource-group <RG> --query documentEndpoint -o tsv
+> az cosmosdb keys list --name <ACCOUNT> --resource-group <RG> --query primaryMasterKey -o tsv
+> ```
+
+**macOS / Linux:**
+```bash
+cat > src/main/resources/risk-platform-cosmos-cloud.properties << EOF
+multiclouddb.provider=cosmos
+multiclouddb.connection.endpoint=https://<YOUR-COSMOS-ACCOUNT-NAME>.documents.azure.com:443/
+multiclouddb.connection.key=<YOUR-PRIMARY-KEY>
+multiclouddb.connection.connectionMode=gateway
+EOF
+```
+
+**Windows (PowerShell):**
+```powershell
+@"
+multiclouddb.provider=cosmos
+multiclouddb.connection.endpoint=https://<YOUR-COSMOS-ACCOUNT-NAME>.documents.azure.com:443/
+multiclouddb.connection.key=<YOUR-PRIMARY-KEY>
+multiclouddb.connection.connectionMode=gateway
+"@ | Set-Content src\main
+esources
+isk-platform-cosmos-cloud.properties
+```
+
+> **Auto-provisioning with key auth:** The Risk Platform auto-creates databases and
+> containers on startup. With key auth alone this will still work, but you can also
+> add the ARM properties below if you want ARM-based management-plane access:
+>
+> ```properties
+> multiclouddb.connection.subscriptionId=<YOUR-SUBSCRIPTION-ID>
+> multiclouddb.connection.resourceGroupName=<YOUR-RESOURCE-GROUP>
+> multiclouddb.connection.tenantId=<YOUR-TENANT-ID>
+> ```
+
+Verify:
+```bash
+cat src/main/resources/risk-platform-cosmos-cloud.properties   # macOS/Linux
+```
+```powershell
+Get-Content src\main
+esources
+isk-platform-cosmos-cloud.properties  # Windows
+```
+
+---
+
+##### Option B — Entra ID / DefaultAzureCredential (recommended for production)
+
+No key in the file. The SDK authenticates using your Azure identity (`az login`,
+Managed Identity, environment variables, etc.).
 
 > Not sure of your account name? Run:
 > ```bash
@@ -1887,9 +1958,6 @@ The cloud properties file is **git-ignored** and must never be committed. Only
 **macOS / Linux:**
 ```bash
 export COSMOS_ACCOUNT="<YOUR-COSMOS-ACCOUNT-NAME>"
-```
-
-```bash
 export COSMOS_SUBSCRIPTION="$(az account show --query id -o tsv)"
 export COSMOS_TENANT="$(az account show --query tenantId -o tsv)"
 export COSMOS_RG="$(az resource list --resource-type Microsoft.DocumentDB/databaseAccounts --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)"
@@ -1898,10 +1966,7 @@ export COSMOS_ENDPOINT="$(az cosmosdb show --name "$COSMOS_ACCOUNT" --resource-g
 
 **Windows (PowerShell):**
 ```powershell
-$env:COSMOS_ACCOUNT = "<YOUR-COSMOS-ACCOUNT-NAME>"
-```
-
-```powershell
+$env:COSMOS_ACCOUNT    = "<YOUR-COSMOS-ACCOUNT-NAME>"
 $env:COSMOS_SUBSCRIPTION = (az account show --query id -o tsv)
 $env:COSMOS_TENANT       = (az account show --query tenantId -o tsv)
 $env:COSMOS_RG           = (az resource list --resource-type Microsoft.DocumentDB/databaseAccounts --query "[?name=='$($env:COSMOS_ACCOUNT)'].resourceGroup" -o tsv)
@@ -1922,11 +1987,6 @@ multiclouddb.connection.tenantId=$COSMOS_TENANT
 EOF
 ```
 
-Verify:
-```bash
-cat src/main/resources/risk-platform-cosmos-cloud.properties
-```
-
 **Windows (PowerShell):**
 ```powershell
 @"
@@ -1940,9 +2000,16 @@ multiclouddb.connection.tenantId=$($env:COSMOS_TENANT)
 ```
 
 Verify:
-```powershell
-Get-Content src\main\resources\risk-platform-cosmos-cloud.properties
+```bash
+cat src/main/resources/risk-platform-cosmos-cloud.properties   # macOS/Linux
 ```
+```powershell
+Get-Content src\main\resources\risk-platform-cosmos-cloud.properties  # Windows
+```
+
+> **Next step for Option B:** You also need the **Cosmos DB Built-in Data Contributor**
+> RBAC role assigned to your identity — see
+> [Grant the Cosmos DB Data-Plane RBAC Role](#grant-the-cosmos-db-data-plane-rbac-role).
 
 > Prefer to fill in the file manually? Copy the template instead:
 >

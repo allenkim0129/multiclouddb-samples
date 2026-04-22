@@ -1,40 +1,43 @@
 # ---------------------------------------------------------------------------
-#  Risk Platform: Azure Cosmos DB (Cloud / Entra ID)
+#  Risk Platform: Azure Cosmos DB (Cloud)
 #  -- HOW TO USE -------------------------------------------------------------
-#  Option 1 (recommended) -- let az CLI fill in the values automatically:
+#  Two authentication options are supported. Uncomment the block you want.
 #
-#    export COSMOS_ACCOUNT="<YOUR-COSMOS-ACCOUNT-NAME>"
-#    export COSMOS_SUBSCRIPTION="$(az account show --query id -o tsv)"
-#    export COSMOS_TENANT="$(az account show --query tenantId -o tsv)"
-#    export COSMOS_RG="$(az resource list --resource-type Microsoft.DocumentDB/databaseAccounts --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)"
-#    export COSMOS_ENDPOINT="$(az cosmosdb show --name "$COSMOS_ACCOUNT" --resource-group "$COSMOS_RG" --query documentEndpoint -o tsv)"
-#    cat > multiclouddb-samples/src/main/resources/risk-platform-cosmos-cloud.properties << EOF
-#    multiclouddb.provider=cosmos
-#    multiclouddb.connection.endpoint=$COSMOS_ENDPOINT
-#    multiclouddb.connection.connectionMode=direct
-#    multiclouddb.connection.subscriptionId=$COSMOS_SUBSCRIPTION
-#    multiclouddb.connection.resourceGroupName=$COSMOS_RG
-#    multiclouddb.connection.tenantId=$COSMOS_TENANT
-#    EOF
+#  OPTION A — Master Key (simpler, no az login needed)
+#  -------------------------------------------------------
+#  Get your endpoint and primary key from Azure Portal → Cosmos DB account → Keys,
+#  or via CLI:
+#    az cosmosdb show --name <ACCOUNT> --resource-group <RG> --query documentEndpoint -o tsv
+#    az cosmosdb keys list --name <ACCOUNT> --resource-group <RG> --query primaryMasterKey -o tsv
 #
-#  Option 2 -- fill in manually:
-#  1. Copy this file and remove the .template extension:
-#       cp risk-platform-cosmos-cloud.properties.template \
-#          risk-platform-cosmos-cloud.properties
-#  2. Fill in YOUR values below (marked with <...>)
-#  3. The *.properties file is git-ignored -- it will never be committed.
+#  OPTION B — Entra ID / DefaultAzureCredential (recommended for production)
+#  --------------------------------------------------------------------------
+#  1. Run `az login` (or set AZURE_CLIENT_ID / AZURE_CLIENT_SECRET / AZURE_TENANT_ID)
+#  2. Assign the "Cosmos DB Built-in Data Contributor" role to your identity
+#  3. Fill in the ARM properties (subscriptionId, resourceGroupName, tenantId)
+#
+#  See README-risk-platform.md → "Create the Cosmos DB Properties File" for
+#  step-by-step instructions for both options.
 # ---------------------------------------------------------------------------
 
 multiclouddb.provider=cosmos
 
-# Your Cosmos DB account endpoint
+# Your Cosmos DB account endpoint (required for both options)
 # Run: az cosmosdb show --name <account> --resource-group <rg> --query documentEndpoint -o tsv
 multiclouddb.connection.endpoint=https://<YOUR-COSMOS-ACCOUNT-NAME>.documents.azure.com:443/
 
-# Use "direct" for best performance in production; "gateway" for restricted networks
-multiclouddb.connection.connectionMode=direct
+# Use "gateway" for restricted networks / firewalls; "direct" for best performance
+multiclouddb.connection.connectionMode=gateway
 
-# -- ARM management-plane (required for auto-provisioning databases & containers) --
+# ---------------------------------------------------------------------------
+# OPTION A — Master Key auth  (comment out if using Option B)
+# ---------------------------------------------------------------------------
+# Run: az cosmosdb keys list --name <account> --resource-group <rg> --query primaryMasterKey -o tsv
+# multiclouddb.connection.key=<YOUR-PRIMARY-KEY>
+
+# ---------------------------------------------------------------------------
+# OPTION B — Entra ID auth  (comment out key above; fill in ARM properties below)
+# ---------------------------------------------------------------------------
 # Azure subscription ID that owns the Cosmos DB account
 # Run: az account show --query id -o tsv
 multiclouddb.connection.subscriptionId=<YOUR-SUBSCRIPTION-ID>
@@ -43,18 +46,6 @@ multiclouddb.connection.subscriptionId=<YOUR-SUBSCRIPTION-ID>
 # Run: az resource list --resource-type Microsoft.DocumentDB/databaseAccounts --query "[?name=='<account>'].resourceGroup" -o tsv
 multiclouddb.connection.resourceGroupName=<YOUR-RESOURCE-GROUP>
 
-# -- Tenant ID (required to avoid InvalidAuthenticationTokenTenant errors) --
-# The Azure AD tenant that owns your subscription
+# Azure AD tenant ID (prevents InvalidAuthenticationTokenTenant errors)
 # Run: az account show --query tenantId -o tsv
 multiclouddb.connection.tenantId=<YOUR-TENANT-ID>
-
-# -- No key needed ----------------------------------------------------------
-# Leave the key property absent -- the SDK uses DefaultAzureCredential automatically.
-# Supported credential sources (in order):
-#   1. Environment variables (AZURE_CLIENT_ID / AZURE_CLIENT_SECRET / AZURE_TENANT_ID)
-#   2. Workload Identity (Kubernetes)
-#   3. Managed Identity (Azure VMs, App Service, AKS)
-#   4. Azure CLI  (az login)
-#   5. Azure Developer CLI  (azd auth login)
-#   6. IntelliJ / Visual Studio credentials
-# multiclouddb.connection.key=<leave absent for Entra ID auth>

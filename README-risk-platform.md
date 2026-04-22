@@ -213,11 +213,19 @@ $env:PATH      = "$env:JAVA_HOME\bin;$env:PATH"
 
 > **How to find your JDK path on Windows:**
 >
+> Check Eclipse Adoptium installs:
+>
 > ```powershell
 > Get-ChildItem 'C:\Program Files\Eclipse Adoptium' -ErrorAction SilentlyContinue
-> Get-ChildItem 'C:\Program Files\Java' -ErrorAction SilentlyContinue
-> # Use whichever path contains your jdk-17* folder
 > ```
+>
+> Check Oracle / OpenJDK installs:
+>
+> ```powershell
+> Get-ChildItem 'C:\Program Files\Java' -ErrorAction SilentlyContinue
+> ```
+>
+> Use whichever path contains your `jdk-17*` folder.
 
 **macOS (Bash / Zsh):**
 
@@ -589,28 +597,42 @@ Navigate to **http://localhost:8090** in your browser.
 
 **Windows (PowerShell):**
 
+List tenants (should return 3):
+
 ```powershell
-# List tenants (should return 3)
 (Invoke-WebRequest http://localhost:8090/api/tenants -UseBasicParsing).Content |
   ConvertFrom-Json | Measure-Object | Select-Object -Expand Count
+```
 
-# Get dashboard for Acme Capital
+Get dashboard for Acme Capital:
+
+```powershell
 Invoke-RestMethod http://localhost:8090/api/dashboard?tenant=acme-capital
+```
 
-# Check provider (should show "cosmos")
+Check provider (should show "cosmos"):
+
+```powershell
 Invoke-RestMethod http://localhost:8090/api/provider
 ```
 
 **macOS / Linux (Bash):**
 
+List tenants (should return 3):
+
 ```bash
-# List tenants (should return 3)
 curl -s http://localhost:8090/api/tenants | python3 -m json.tool
+```
 
-# Get dashboard for Acme Capital
+Get dashboard for Acme Capital:
+
+```bash
 curl -s http://localhost:8090/api/dashboard?tenant=acme-capital | python3 -m json.tool
+```
 
-# Check provider (should show "cosmos")
+Check provider (should show "cosmos"):
+
+```bash
 curl -s http://localhost:8090/api/provider | python3 -m json.tool
 ```
 
@@ -835,28 +857,42 @@ Navigate to **http://localhost:8090** in your browser.
 
 **Windows (PowerShell):**
 
+List tenants (should return 3):
+
 ```powershell
-# List tenants (should return 3)
 (Invoke-WebRequest http://localhost:8090/api/tenants -UseBasicParsing).Content |
   ConvertFrom-Json | Measure-Object | Select-Object -Expand Count
+```
 
-# Get dashboard for Acme Capital
+Get dashboard for Acme Capital:
+
+```powershell
 Invoke-RestMethod http://localhost:8090/api/dashboard?tenant=acme-capital
+```
 
-# Check provider (should show "dynamo")
+Check provider (should show "dynamo"):
+
+```powershell
 Invoke-RestMethod http://localhost:8090/api/provider
 ```
 
 **macOS / Linux (Bash):**
 
+List tenants (should return 3):
+
 ```bash
-# List tenants (should return 3)
 curl -s http://localhost:8090/api/tenants | python3 -m json.tool
+```
 
-# Get dashboard for Acme Capital
+Get dashboard for Acme Capital:
+
+```bash
 curl -s http://localhost:8090/api/dashboard?tenant=acme-capital | python3 -m json.tool
+```
 
-# Check provider (should show "dynamo")
+Check provider (should show "dynamo"):
+
+```bash
 curl -s http://localhost:8090/api/provider | python3 -m json.tool
 ```
 
@@ -1001,10 +1037,16 @@ account name and resource group directly from the properties file — no manual
 editing required.
 
 **macOS / Linux:**
-```bash
-# First time only — make the script executable
-chmod +x multiclouddb-samples/scripts/cleanup-cosmos.sh
 
+First time only — make the script executable:
+
+```bash
+chmod +x multiclouddb-samples/scripts/cleanup-cosmos.sh
+```
+
+Run the cleanup script:
+
+```bash
 ./multiclouddb-samples/scripts/cleanup-cosmos.sh
 ```
 
@@ -1196,10 +1238,16 @@ region automatically from `aws configure` (or prompts you), lists what it will
 delete, and asks for confirmation before proceeding.
 
 **macOS / Linux:**
-```bash
-# First time only — make the script executable
-chmod +x multiclouddb-samples/scripts/cleanup-dynamo.sh
 
+First time only — make the script executable:
+
+```bash
+chmod +x multiclouddb-samples/scripts/cleanup-dynamo.sh
+```
+
+Run the cleanup script:
+
+```bash
 ./multiclouddb-samples/scripts/cleanup-dynamo.sh
 ```
 
@@ -1541,20 +1589,33 @@ All endpoints accept a `?tenant=<tenantId>` query parameter for tenant context.
 
 ### Example Requests
 
+Get dashboard data for Acme Capital:
+
 ```powershell
-# Get dashboard data for Acme Capital
 Invoke-RestMethod http://localhost:8090/api/dashboard?tenant=acme-capital
+```
 
-# List all tenants
+List all tenants:
+
+```powershell
 Invoke-RestMethod http://localhost:8090/api/tenants
+```
 
-# Get positions for a specific portfolio
+Get positions for a specific portfolio:
+
+```powershell
 Invoke-RestMethod "http://localhost:8090/api/positions?tenant=acme-capital&portfolio=acme-eq-alpha"
+```
 
-# Get risk alerts for Vanguard Partners
+Get risk alerts for Vanguard Partners:
+
+```powershell
 Invoke-RestMethod http://localhost:8090/api/alerts?tenant=vanguard-partners
+```
 
-# Check provider info
+Check provider info:
+
+```powershell
 Invoke-RestMethod http://localhost:8090/api/provider
 ```
 
@@ -1796,12 +1857,15 @@ with `az login` and manage Azure resources from the terminal.
 
 **Windows (PowerShell):**
 
-```powershell
-# Option 1 — winget (recommended, one command)
-winget install Microsoft.AzureCLI
+**Option 1 — winget (recommended):**
 
-# Option 2 — MSI installer (download and run the wizard)
-# Download from: https://aka.ms/installazurecliwindows
+```powershell
+winget install Microsoft.AzureCLI
+```
+
+**Option 2 — MSI installer (download and run the wizard):**
+
+```powershell
 Start-Process "https://aka.ms/installazurecliwindows"
 ```
 
@@ -2064,37 +2128,67 @@ Get-Content src\main\resources\risk-platform-cosmos-cloud.properties
 > to set up credentials manually or understand what each value means.
 
 **macOS / Linux / Windows:**
+
+**Step 1 — Sign in to Azure:**
+
 ```bash
-# Sign in (opens a browser window)
 az login
+```
 
-# List all subscriptions — if you have more than one, note which one owns your Cosmos account
+**Step 2 — List all subscriptions** (if you have more than one, note which one owns your Cosmos account):
+
+```bash
 az account list --query "[].{Name:name, ID:id, TenantID:tenantId}" -o table
+```
 
-# Switch to the correct subscription (skip if you only have one)
+**Step 3 — Switch to the correct subscription** (skip if you only have one):
+
+```bash
 az account set --subscription <SUBSCRIPTION-ID>
+```
 
-# List all Cosmos DB accounts in the subscription
+**Step 4 — List all Cosmos DB accounts in the subscription:**
+
+```bash
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
 ```
 
 Once you know the account name, fetch the individual values:
 
-```bash
-# Set the account name (the only value you type)
-COSMOS_ACCOUNT="<paste-account-name-from-the-table-above>"
+Set the account name (the only value you type):
 
-# Fetch everything else
-az account show --query id -o tsv                                            # subscriptionId
-az account show --query tenantId -o tsv                                      # tenantId
+```bash
+COSMOS_ACCOUNT="<paste-account-name-from-the-table-above>"
+```
+
+Fetch the subscription ID:
+
+```bash
+az account show --query id -o tsv
+```
+
+Fetch the tenant ID:
+
+```bash
+az account show --query tenantId -o tsv
+```
+
+Fetch the resource group name:
+
+```bash
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
-  --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv                  # resourceGroupName
+  --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv
+```
+
+Fetch the endpoint:
+
+```bash
 az cosmosdb show --name "$COSMOS_ACCOUNT" \
   --resource-group "$(az resource list \
     --resource-type Microsoft.DocumentDB/databaseAccounts \
     --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)" \
-  --query documentEndpoint -o tsv                                            # endpoint
+  --query documentEndpoint -o tsv
 ```
 
 > **Why is tenantId needed?**
@@ -2214,11 +2308,15 @@ credentials with `aws configure` and manage AWS resources from the terminal.
 
 **Windows (PowerShell):**
 
-```powershell
-# Option 1 — winget (recommended)
-winget install Amazon.AWSCLI
+**Option 1 — winget (recommended):**
 
-# Option 2 — MSI installer
+```powershell
+winget install Amazon.AWSCLI
+```
+
+**Option 2 — MSI installer:**
+
+```powershell
 curl.exe -fSL -o "$env:TEMP\AWSCLIV2.msi" "https://awscli.amazonaws.com/AWSCLIV2.msi"
 Start-Process msiexec.exe -ArgumentList "/i `"$env:TEMP\AWSCLIV2.msi`"" -Wait
 ```
@@ -2227,11 +2325,15 @@ Start-Process msiexec.exe -ArgumentList "/i `"$env:TEMP\AWSCLIV2.msi`"" -Wait
 
 **macOS:**
 
-```bash
-# Option 1 — Homebrew
-brew install awscli
+**Option 1 — Homebrew:**
 
-# Option 2 — official pkg installer
+```bash
+brew install awscli
+```
+
+**Option 2 — official pkg installer:**
+
+```bash
 curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o /tmp/AWSCLIV2.pkg
 sudo installer -pkg /tmp/AWSCLIV2.pkg -target /
 ```
@@ -2379,12 +2481,22 @@ where you want DynamoDB tables created.
 **Commands to discover your region:**
 
 **macOS / Linux / Windows:**
-```bash
-# Print your currently configured region
-aws configure get region
 
-# Check if you have existing DynamoDB tables in common regions
+Print your currently configured region:
+
+```bash
+aws configure get region
+```
+
+Check if you have existing DynamoDB tables in us-east-1:
+
+```bash
 aws dynamodb list-tables --region us-east-1 --output table
+```
+
+Check if you have existing DynamoDB tables in us-west-2:
+
+```bash
 aws dynamodb list-tables --region us-west-2 --output table
 ```
 

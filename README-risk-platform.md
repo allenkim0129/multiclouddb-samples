@@ -1968,7 +1968,7 @@ az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
 **Step 2 — Enter your account name:**
 
 ```bash
-read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+printf "Cosmos DB account name: "; read COSMOS_ACCOUNT
 ```
 
 **Step 3 — Fetch the resource group, endpoint, and primary key:**
@@ -2089,7 +2089,7 @@ az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
 **Step 3 — Enter your account name:**
 
 ```bash
-read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+printf "Cosmos DB account name: "; read COSMOS_ACCOUNT
 ```
 
 **Step 4 — Fetch all required values:**
@@ -2286,7 +2286,7 @@ az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
 **Step 2 — Enter your account name:**
 
 ```bash
-read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+printf "Cosmos DB account name: "; read COSMOS_ACCOUNT
 ```
 
 **Step 3 — Fetch the resource group and your identity:**
@@ -2374,7 +2374,7 @@ az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
 **Step 2 — Enter your account name:**
 
 ```bash
-read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+printf "Cosmos DB account name: "; read COSMOS_ACCOUNT
 ```
 
 **Step 3 — Fetch the resource group:**

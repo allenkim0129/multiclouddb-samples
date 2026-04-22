@@ -195,6 +195,21 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--
+                Run samples directly with Maven:
+                  mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp
+                  mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.todo.TodoApp
+                  mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.PortableCrudQuerySample
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <mainClass>com.multiclouddb.samples.PortableCrudQuerySample</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

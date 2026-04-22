@@ -61,8 +61,7 @@ Runs the same CRUD and query code against any provider. Switch by pointing `mult
 2. Run:
 
 ```bash
-mvn exec:java \
-  -Dexec.mainClass=com.multiclouddb.samples.PortableCrudQuerySample
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.PortableCrudQuerySample
 ```
 
 ### Against DynamoDB (local)
@@ -71,9 +70,8 @@ mvn exec:java \
 2. Run:
 
 ```bash
-mvn exec:java \
-  -Dexec.mainClass=com.multiclouddb.samples.PortableCrudQuerySample \
-  -Dmulticlouddb.config=todo-app-dynamo.properties
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.PortableCrudQuerySample \
+    -Dmulticlouddb.config=todo-app-dynamo.properties
 ```
 
 ### Against Spanner (emulator)
@@ -82,10 +80,47 @@ mvn exec:java \
 2. Run:
 
 ```bash
-mvn exec:java \
-  -Dexec.mainClass=com.multiclouddb.samples.PortableCrudQuerySample \
-  -Dmulticlouddb.config=todo-app-spanner.properties
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.PortableCrudQuerySample \
+    -Dmulticlouddb.config=todo-app-spanner.properties
 ```
+
+---
+
+## Running the Samples
+
+> **Important:** Always run `mvn` from the **repo root** (where `pom.xml` lives). Do **not** use `-pl` — this is a standalone single-module project.
+
+### Risk Analysis Platform
+
+```bash
+# Against Cosmos DB (local emulator)
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
+    -Drisk.config=risk-platform-cosmos.properties
+
+# Against Cosmos DB (cloud)
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
+    -Drisk.config=risk-platform-cosmos-cloud.properties
+
+# Against DynamoDB (local)
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
+    -Drisk.config=risk-platform-dynamo.properties
+
+# Against DynamoDB (cloud)
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
+    -Drisk.config=risk-platform-dynamo-cloud.properties
+```
+
+### TODO App
+
+```bash
+# Against Cosmos DB (local emulator)
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.todo.TodoApp
+
+# Against DynamoDB (local)
+mvn exec:java -Dexec.mainClass=com.multiclouddb.samples.todo.TodoApp \
+    -Dmulticlouddb.config=todo-app-dynamo.properties
+```
+
 
 ---
 

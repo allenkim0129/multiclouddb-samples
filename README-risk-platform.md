@@ -251,11 +251,13 @@ java -version
 
 ### Step 1 — Build the SDK
 
-Run from the **repo root** (`multiclouddb-sdk-for-java/`).
+First, install the Multicloud DB SDK artifacts into your local `~/.m2` repository.
+Run this **from the [multiclouddb-sdk-for-java](https://github.com/microsoft/multiclouddb-sdk-for-java) repo root** (not this repo):
 
 **macOS / Linux / Windows:**
 
 ```bash
+# In the multiclouddb-sdk-for-java repo
 mvn clean install -DskipTests
 ```
 
@@ -263,6 +265,12 @@ Expected output ends with:
 
 ```
 [INFO] BUILD SUCCESS
+```
+
+Then, compile this samples project from **this repo root** (where `pom.xml` lives):
+
+```bash
+mvn compile
 ```
 
 > **If `mvn` is not recognized** — Maven is not on your PATH. See
@@ -494,7 +502,7 @@ keytool -importcert -alias cosmosemulator \
 >
 > **If you see `keytool error: java.io.FileNotFoundException`** — you are
 > running the command from the wrong directory. Make sure you are at the
-> **repo root** (`multiclouddb-sdk-for-java/`), or use absolute paths.
+> **repo root** (the `multiclouddb-samples/` directory where `pom.xml` lives), or use absolute paths.
 >
 > **If you see `Access denied`** — you may be trying to write to the global
 > Java `cacerts` file instead of the local truststore. Make sure you are using
@@ -520,7 +528,7 @@ all platforms.
 **Windows (PowerShell):**
 
 ```powershell
-mvn -pl multiclouddb-samples exec:java `
+mvn exec:java `
   "-Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp" `
   "-Drisk.config=risk-platform-cosmos.properties" `
   "-Djavax.net.ssl.trustStore=$PWD/.tools/cacerts-local" `
@@ -530,7 +538,7 @@ mvn -pl multiclouddb-samples exec:java `
 **macOS / Linux (Bash):**
 
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-cosmos.properties \
   "-Djavax.net.ssl.trustStore=$PWD/.tools/cacerts-local" \
@@ -796,7 +804,7 @@ In the **second terminal**, from the **repo root**:
 **Windows (PowerShell):**
 
 ```powershell
-mvn -pl multiclouddb-samples exec:java `
+mvn exec:java `
   "-Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp" `
   "-Drisk.config=risk-platform-dynamo.properties"
 ```
@@ -804,7 +812,7 @@ mvn -pl multiclouddb-samples exec:java `
 **macOS / Linux (Bash):**
 
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-dynamo.properties
 ```
@@ -905,7 +913,7 @@ Sign in to Azure CLI so the SDK can authenticate using `DefaultAzureCredential`.
 
 **macOS / Linux / Windows:**
 ```bash
-mvn clean install -DskipTests
+mvn compile
 ```
 
 ---
@@ -917,14 +925,14 @@ publicly trusted TLS certificate.
 
 **macOS / Linux:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-cosmos-cloud.properties
 ```
 
 **Windows (PowerShell):**
 ```powershell
-mvn -pl multiclouddb-samples exec:java `
+mvn exec:java `
   "-Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp" `
   "-Drisk.config=risk-platform-cosmos-cloud.properties"
 ```
@@ -1102,7 +1110,7 @@ Configure the AWS CLI so the SDK can authenticate using the default credential c
 
 **macOS / Linux / Windows:**
 ```bash
-mvn clean install -DskipTests
+mvn compile
 ```
 
 ---
@@ -1113,14 +1121,14 @@ Run from the **repo root**.
 
 **macOS / Linux:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-dynamo-cloud.properties
 ```
 
 **Windows (PowerShell):**
 ```powershell
-mvn -pl multiclouddb-samples exec:java `
+mvn exec:java `
   "-Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp" `
   "-Drisk.config=risk-platform-dynamo-cloud.properties"
 ```
@@ -1259,7 +1267,7 @@ then re-run with the parameters for the desired provider.
 
 **macOS / Linux:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=<CONFIG_FILE> \
   [<EXTRA_ARGS>]
@@ -1267,7 +1275,7 @@ mvn -pl multiclouddb-samples exec:java \
 
 **Windows (PowerShell):**
 ```powershell
-mvn -pl multiclouddb-samples exec:java `
+mvn exec:java `
   "-Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp" `
   "-Drisk.config=<CONFIG_FILE>" `
   [<EXTRA_ARGS>]
@@ -1297,7 +1305,7 @@ Replace `<CONFIG_FILE>` and `<EXTRA_ARGS>` using the table below.
 
 **macOS / Linux:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-cosmos.properties \
   -Djavax.net.ssl.trustStore=.tools/cacerts-local \
@@ -1306,7 +1314,7 @@ mvn -pl multiclouddb-samples exec:java \
 
 **Windows (PowerShell):**
 ```powershell
-mvn -pl multiclouddb-samples exec:java `
+mvn exec:java `
   "-Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp" `
   "-Drisk.config=risk-platform-cosmos.properties" `
   "-Djavax.net.ssl.trustStore=$PWD/.tools/cacerts-local" `
@@ -1319,7 +1327,7 @@ mvn -pl multiclouddb-samples exec:java `
 
 **macOS / Linux / Windows:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-dynamo.properties
 ```
@@ -1330,7 +1338,7 @@ mvn -pl multiclouddb-samples exec:java \
 
 **macOS / Linux / Windows:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-cosmos-cloud.properties
 ```
@@ -1341,7 +1349,7 @@ mvn -pl multiclouddb-samples exec:java \
 
 **macOS / Linux / Windows:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-dynamo-cloud.properties
 ```
@@ -1412,7 +1420,7 @@ Open **http://localhost:8001** to browse DynamoDB tables and items.
 
 **macOS / Linux:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-cosmos.properties \
   -Djavax.net.ssl.trustStore=.tools/cacerts-local \
@@ -1422,7 +1430,7 @@ mvn -pl multiclouddb-samples exec:java \
 
 **Windows (PowerShell):**
 ```powershell
-mvn -pl multiclouddb-samples exec:java `
+mvn exec:java `
   "-Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp" `
   "-Drisk.config=risk-platform-cosmos.properties" `
   "-Djavax.net.ssl.trustStore=$PWD/.tools/cacerts-local" `
@@ -1438,7 +1446,7 @@ mvn -pl multiclouddb-samples exec:java `
 
 **macOS / Linux / Windows:**
 ```bash
-mvn -pl multiclouddb-samples exec:java \
+mvn exec:java \
   -Dexec.mainClass=com.multiclouddb.samples.riskplatform.RiskPlatformApp \
   -Drisk.config=risk-platform-dynamo.properties \
   -Drisk.port=8091
@@ -1492,7 +1500,7 @@ Override the default port (8090) with:
 | `Connection refused` on port 8000 (DynamoDB) | DynamoDB Local not started | Start it in a separate terminal (see Step B1) |
 | `UnsatisfiedLinkError` (DynamoDB Local) | Wrong `-Djava.library.path` | Use `-Djava.library.path=./DynamoDBLocal_lib` (not `.`) |
 | `BUILD FAILURE` on `mvn install` | JAVA_HOME not set | Run `$env:JAVA_HOME = '...'` and `$env:PATH = ...` first |
-| `ClassNotFoundException` when running the app | SDK not built | Run `mvn clean install -DskipTests` from repo root first |
+| `ClassNotFoundException` when running the app | SDK not built | Run `mvn clean install -DskipTests` in the [multiclouddb-sdk-for-java](https://github.com/microsoft/multiclouddb-sdk-for-java) repo first, then `mvn compile` here |
 | `InvalidAuthenticationTokenTenant` (401) | CLI token issued for a different tenant than the subscription's tenant | Set `multiclouddb.connection.tenantId` in the properties file — run `az account show --query tenantId -o tsv` to get the correct value |
 | `Request blocked by Auth … cannot be authorized by AAD token in data plane` (403 subStatus 5300) | Cosmos DB Built-in Data Contributor role not assigned | Run `az cosmosdb sql role assignment create` (see Step C2) |
 | `DefaultAzureCredential authentication failed` (Cosmos Cloud) | Not signed in to Azure CLI | Run `az login` and verify with `az account show` |
@@ -1904,7 +1912,7 @@ $env:COSMOS_ENDPOINT     = (az cosmosdb show --name $env:COSMOS_ACCOUNT --resour
 
 **macOS / Linux:**
 ```bash
-cat > multiclouddb-samples/src/main/resources/risk-platform-cosmos-cloud.properties << EOF
+cat > src/main/resources/risk-platform-cosmos-cloud.properties << EOF
 multiclouddb.provider=cosmos
 multiclouddb.connection.endpoint=$COSMOS_ENDPOINT
 multiclouddb.connection.connectionMode=gateway
@@ -1916,7 +1924,7 @@ EOF
 
 Verify:
 ```bash
-cat multiclouddb-samples/src/main/resources/risk-platform-cosmos-cloud.properties
+cat src/main/resources/risk-platform-cosmos-cloud.properties
 ```
 
 **Windows (PowerShell):**
@@ -1928,25 +1936,25 @@ multiclouddb.connection.connectionMode=gateway
 multiclouddb.connection.subscriptionId=$($env:COSMOS_SUBSCRIPTION)
 multiclouddb.connection.resourceGroupName=$($env:COSMOS_RG)
 multiclouddb.connection.tenantId=$($env:COSMOS_TENANT)
-"@ | Set-Content multiclouddb-samples\src\main\resources\risk-platform-cosmos-cloud.properties
+"@ | Set-Content src\main\resources\risk-platform-cosmos-cloud.properties
 ```
 
 Verify:
 ```powershell
-Get-Content multiclouddb-samples\src\main\resources\risk-platform-cosmos-cloud.properties
+Get-Content src\main\resources\risk-platform-cosmos-cloud.properties
 ```
 
 > Prefer to fill in the file manually? Copy the template instead:
 >
 > **macOS / Linux:**
 > ```bash
-> cp multiclouddb-samples/src/main/resources/risk-platform-cosmos-cloud.properties.template \
->    multiclouddb-samples/src/main/resources/risk-platform-cosmos-cloud.properties
+> cp src/main/resources/risk-platform-cosmos-cloud.properties.template \
+>    src/main/resources/risk-platform-cosmos-cloud.properties
 > ```
 > **Windows (PowerShell):**
 > ```powershell
-> Copy-Item multiclouddb-samples\src\main\resources\risk-platform-cosmos-cloud.properties.template `
->           multiclouddb-samples\src\main\resources\risk-platform-cosmos-cloud.properties
+> Copy-Item src\main\resources\risk-platform-cosmos-cloud.properties.template `
+>           src\main\resources\risk-platform-cosmos-cloud.properties
 > ```
 
 ---
@@ -2163,7 +2171,7 @@ $env:AWS_REGION = "us-east-1"
 
 **macOS / Linux:**
 ```bash
-cat > multiclouddb-samples/src/main/resources/risk-platform-dynamo-cloud.properties << EOF
+cat > src/main/resources/risk-platform-dynamo-cloud.properties << EOF
 multiclouddb.provider=dynamo
 multiclouddb.connection.region=$AWS_REGION
 EOF
@@ -2171,7 +2179,7 @@ EOF
 
 Verify:
 ```bash
-cat multiclouddb-samples/src/main/resources/risk-platform-dynamo-cloud.properties
+cat src/main/resources/risk-platform-dynamo-cloud.properties
 ```
 
 **Windows (PowerShell):**
@@ -2179,25 +2187,25 @@ cat multiclouddb-samples/src/main/resources/risk-platform-dynamo-cloud.propertie
 @"
 multiclouddb.provider=dynamo
 multiclouddb.connection.region=$($env:AWS_REGION)
-"@ | Set-Content multiclouddb-samples\src\main\resources\risk-platform-dynamo-cloud.properties
+"@ | Set-Content src\main\resources\risk-platform-dynamo-cloud.properties
 ```
 
 Verify:
 ```powershell
-Get-Content multiclouddb-samples\src\main\resources\risk-platform-dynamo-cloud.properties
+Get-Content src\main\resources\risk-platform-dynamo-cloud.properties
 ```
 
 > Prefer to fill in the file manually? Copy the template instead:
 >
 > **macOS / Linux:**
 > ```bash
-> cp multiclouddb-samples/src/main/resources/risk-platform-dynamo-cloud.properties.template \
->    multiclouddb-samples/src/main/resources/risk-platform-dynamo-cloud.properties
+> cp src/main/resources/risk-platform-dynamo-cloud.properties.template \
+>    src/main/resources/risk-platform-dynamo-cloud.properties
 > ```
 > **Windows (PowerShell):**
 > ```powershell
-> Copy-Item multiclouddb-samples\src\main\resources\risk-platform-dynamo-cloud.properties.template `
->           multiclouddb-samples\src\main\resources\risk-platform-dynamo-cloud.properties
+> Copy-Item src\main\resources\risk-platform-dynamo-cloud.properties.template `
+>           src\main\resources\risk-platform-dynamo-cloud.properties
 > ```
 
 ---

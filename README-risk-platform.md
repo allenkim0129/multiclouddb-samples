@@ -1952,20 +1952,28 @@ Choose the authentication method that fits your setup:
 
 ##### Option A — Master Key (quickest setup)
 
-Run the block below. It will **list your Cosmos DB accounts**, ask for the account
-name, fetch the endpoint and key automatically, and write the properties file —
-no manual editing required.
+> Run the following steps **in order** in the same terminal. Variables set in one step carry forward to the next — do not close the terminal between steps.
 
-**macOS / Linux** (paste the whole block into your terminal):
+---
+
+**macOS / Linux**
+
+**Step 1 — List your Cosmos DB accounts:**
+
 ```bash
-# List your Cosmos DB accounts so you can see the correct name
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
+```
 
-# You will be prompted for the account name — copy it from the table above
+**Step 2 — Enter your account name:**
+
+```bash
 read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+```
 
-# Fetch resource group, endpoint, and primary key automatically
+**Step 3 — Fetch the resource group, endpoint, and primary key:**
+
+```bash
 COSMOS_RG=$(az resource list \
   --resource-type Microsoft.DocumentDB/databaseAccounts \
   --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)
@@ -1975,29 +1983,45 @@ COSMOS_ENDPOINT=$(az cosmosdb show \
 COSMOS_KEY=$(az cosmosdb keys list \
   --name "$COSMOS_ACCOUNT" --resource-group "$COSMOS_RG" \
   --query primaryMasterKey -o tsv)
+```
 
-# Write the properties file
+**Step 4 — Write the properties file:**
+
+```bash
 cat > src/main/resources/risk-platform-cosmos-cloud.properties << EOF
 multiclouddb.provider=cosmos
 multiclouddb.connection.endpoint=$COSMOS_ENDPOINT
 multiclouddb.connection.key=$COSMOS_KEY
 multiclouddb.connection.connectionMode=gateway
 EOF
+```
 
-echo "Done. Verify:"
+**Step 5 — Verify:**
+
+```bash
 cat src/main/resources/risk-platform-cosmos-cloud.properties
 ```
 
-**Windows (PowerShell)** (paste the whole block into your terminal):
+---
+
+**Windows (PowerShell)**
+
+**Step 1 — List your Cosmos DB accounts:**
+
 ```powershell
-# List your Cosmos DB accounts so you can see the correct name
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts `
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
+```
 
-# You will be prompted for the account name — copy it from the table above
+**Step 2 — Enter your account name:**
+
+```powershell
 $COSMOS_ACCOUNT = Read-Host "Cosmos DB account name"
+```
 
-# Fetch resource group, endpoint, and primary key automatically
+**Step 3 — Fetch the resource group, endpoint, and primary key:**
+
+```powershell
 $COSMOS_RG       = (az resource list `
   --resource-type Microsoft.DocumentDB/databaseAccounts `
   --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)
@@ -2007,16 +2031,22 @@ $COSMOS_ENDPOINT = (az cosmosdb show `
 $COSMOS_KEY      = (az cosmosdb keys list `
   --name $COSMOS_ACCOUNT --resource-group $COSMOS_RG `
   --query primaryMasterKey -o tsv)
+```
 
-# Write the properties file
+**Step 4 — Write the properties file:**
+
+```powershell
 @"
 multiclouddb.provider=cosmos
 multiclouddb.connection.endpoint=$COSMOS_ENDPOINT
 multiclouddb.connection.key=$COSMOS_KEY
 multiclouddb.connection.connectionMode=gateway
 "@ | Set-Content src\main\resources\risk-platform-cosmos-cloud.properties
+```
 
-Write-Host "Done. Verify:"
+**Step 5 — Verify:**
+
+```powershell
 Get-Content src\main\resources\risk-platform-cosmos-cloud.properties
 ```
 
@@ -2037,22 +2067,34 @@ Get-Content src\main\resources\risk-platform-cosmos-cloud.properties
 No key in the file. The SDK authenticates using your Azure identity (`az login`,
 Managed Identity, or environment variables).
 
-Run the block below. It will sign you in, list your accounts, prompt for the account
-name, and fetch everything automatically.
+> Run the following steps **in order** in the same terminal. Variables set in one step carry forward to the next — do not close the terminal between steps.
 
-**macOS / Linux** (paste the whole block into your terminal):
+---
+
+**macOS / Linux**
+
+**Step 1 — Sign in to Azure:**
+
 ```bash
-# Sign in to Azure (opens a browser window)
 az login
+```
 
-# List your Cosmos DB accounts so you can see the correct name
+**Step 2 — List your Cosmos DB accounts:**
+
+```bash
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
+```
 
-# You will be prompted for the account name — copy it from the table above
+**Step 3 — Enter your account name:**
+
+```bash
 read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+```
 
-# Fetch all required values automatically
+**Step 4 — Fetch all required values:**
+
+```bash
 COSMOS_SUBSCRIPTION=$(az account show --query id -o tsv)
 COSMOS_TENANT=$(az account show --query tenantId -o tsv)
 COSMOS_RG=$(az resource list \
@@ -2061,8 +2103,11 @@ COSMOS_RG=$(az resource list \
 COSMOS_ENDPOINT=$(az cosmosdb show \
   --name "$COSMOS_ACCOUNT" --resource-group "$COSMOS_RG" \
   --query documentEndpoint -o tsv)
+```
 
-# Write the properties file
+**Step 5 — Write the properties file:**
+
+```bash
 cat > src/main/resources/risk-platform-cosmos-cloud.properties << EOF
 multiclouddb.provider=cosmos
 multiclouddb.connection.endpoint=$COSMOS_ENDPOINT
@@ -2071,24 +2116,40 @@ multiclouddb.connection.subscriptionId=$COSMOS_SUBSCRIPTION
 multiclouddb.connection.resourceGroupName=$COSMOS_RG
 multiclouddb.connection.tenantId=$COSMOS_TENANT
 EOF
+```
 
-echo "Done. Verify:"
+**Step 6 — Verify:**
+
+```bash
 cat src/main/resources/risk-platform-cosmos-cloud.properties
 ```
 
-**Windows (PowerShell)** (paste the whole block into your terminal):
-```powershell
-# Sign in to Azure (opens a browser window)
-az login
+---
 
-# List your Cosmos DB accounts so you can see the correct name
+**Windows (PowerShell)**
+
+**Step 1 — Sign in to Azure:**
+
+```powershell
+az login
+```
+
+**Step 2 — List your Cosmos DB accounts:**
+
+```powershell
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts `
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
+```
 
-# You will be prompted for the account name — copy it from the table above
+**Step 3 — Enter your account name:**
+
+```powershell
 $COSMOS_ACCOUNT = Read-Host "Cosmos DB account name"
+```
 
-# Fetch all required values automatically
+**Step 4 — Fetch all required values:**
+
+```powershell
 $COSMOS_SUBSCRIPTION = (az account show --query id -o tsv)
 $COSMOS_TENANT       = (az account show --query tenantId -o tsv)
 $COSMOS_RG           = (az resource list `
@@ -2097,8 +2158,11 @@ $COSMOS_RG           = (az resource list `
 $COSMOS_ENDPOINT     = (az cosmosdb show `
   --name $COSMOS_ACCOUNT --resource-group $COSMOS_RG `
   --query documentEndpoint -o tsv)
+```
 
-# Write the properties file
+**Step 5 — Write the properties file:**
+
+```powershell
 @"
 multiclouddb.provider=cosmos
 multiclouddb.connection.endpoint=$COSMOS_ENDPOINT
@@ -2107,14 +2171,17 @@ multiclouddb.connection.subscriptionId=$COSMOS_SUBSCRIPTION
 multiclouddb.connection.resourceGroupName=$COSMOS_RG
 multiclouddb.connection.tenantId=$COSMOS_TENANT
 "@ | Set-Content src\main\resources\risk-platform-cosmos-cloud.properties
+```
 
-Write-Host "Done. Verify:"
+**Step 6 — Verify:**
+
+```powershell
 Get-Content src\main\resources\risk-platform-cosmos-cloud.properties
 ```
 
-> **Multiple subscriptions?** Run `az account list -o table` before the block above
-> to find the right subscription, then run `az account set --subscription <ID>` to
-> select it. The `COSMOS_SUBSCRIPTION` variable is then fetched from the correct one.
+> **Multiple subscriptions?** Run `az account list -o table` before Step 2 to find
+> the right subscription, then run `az account set --subscription <ID>` to select it
+> before Step 4.
 
 > **Next step for Option B:** Assign the RBAC role — see
 > [Grant the Cosmos DB Data-Plane RBAC Role](#grant-the-cosmos-db-data-plane-rbac-role).
@@ -2205,21 +2272,36 @@ separate from ARM RBAC.
 
 > Run this **once** per Cosmos DB account. Safe to re-run if already assigned.
 
-**macOS / Linux** (paste the whole block — you will be prompted for the account name):
+**macOS / Linux**
+
+> Run the following steps **in order** in the same terminal.
+
+**Step 1 — List your Cosmos DB accounts:**
+
 ```bash
-# List accounts and enter the name when prompted
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
-read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+```
 
-# Fetch resource group and your identity automatically
+**Step 2 — Enter your account name:**
+
+```bash
+read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+```
+
+**Step 3 — Fetch the resource group and your identity:**
+
+```bash
 COSMOS_RG=$(az resource list \
   --resource-type Microsoft.DocumentDB/databaseAccounts \
   --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)
 PRINCIPAL_ID=$(az ad signed-in-user show --query id -o tsv)
-
 echo "Assigning role for: $COSMOS_ACCOUNT ($COSMOS_RG), principal: $PRINCIPAL_ID"
+```
 
+**Step 4 — Assign the role:**
+
+```bash
 az cosmosdb sql role assignment create \
   --account-name "$COSMOS_ACCOUNT" \
   --resource-group "$COSMOS_RG" \
@@ -2228,21 +2310,38 @@ az cosmosdb sql role assignment create \
   --principal-id "$PRINCIPAL_ID"
 ```
 
-**Windows (PowerShell)** (paste the whole block — you will be prompted for the account name):
+---
+
+**Windows (PowerShell)**
+
+> Run the following steps **in order** in the same terminal.
+
+**Step 1 — List your Cosmos DB accounts:**
+
 ```powershell
-# List accounts and enter the name when prompted
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts `
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
-$COSMOS_ACCOUNT = Read-Host "Cosmos DB account name"
+```
 
-# Fetch resource group and your identity automatically
-$COSMOS_RG     = (az resource list `
+**Step 2 — Enter your account name:**
+
+```powershell
+$COSMOS_ACCOUNT = Read-Host "Cosmos DB account name"
+```
+
+**Step 3 — Fetch the resource group and your identity:**
+
+```powershell
+$COSMOS_RG    = (az resource list `
   --resource-type Microsoft.DocumentDB/databaseAccounts `
   --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)
-$PRINCIPAL_ID  = (az ad signed-in-user show --query id -o tsv)
-
+$PRINCIPAL_ID = (az ad signed-in-user show --query id -o tsv)
 Write-Host "Assigning role for: $COSMOS_ACCOUNT ($COSMOS_RG), principal: $PRINCIPAL_ID"
+```
 
+**Step 4 — Assign the role:**
+
+```powershell
 az cosmosdb sql role assignment create `
   --account-name $COSMOS_ACCOUNT `
   --resource-group $COSMOS_RG `
@@ -2261,40 +2360,95 @@ az cosmosdb sql role assignment create `
 
 #### Verify Azure Prerequisites
 
-**macOS / Linux** (paste the whole block — you will be prompted for the account name):
+**macOS / Linux**
+
+> Run the following steps **in order** in the same terminal.
+
+**Step 1 — List your Cosmos DB accounts:**
+
 ```bash
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts \
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
+```
+
+**Step 2 — Enter your account name:**
+
+```bash
 read -p "Cosmos DB account name: " COSMOS_ACCOUNT
+```
+
+**Step 3 — Fetch the resource group:**
+
+```bash
 COSMOS_RG=$(az resource list \
   --resource-type Microsoft.DocumentDB/databaseAccounts \
   --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)
+```
 
-# Confirm signed in and on the right subscription
+**Step 4 — Confirm signed in and on the right subscription:**
+
+```bash
 az account show --query "{Name:name, SubscriptionID:id, TenantID:tenantId}" -o table
+```
 
-# Confirm the Cosmos DB account is reachable
+**Step 5 — Confirm the Cosmos DB account is reachable:**
+
+```bash
 az cosmosdb show --name "$COSMOS_ACCOUNT" --resource-group "$COSMOS_RG" \
   --query "{Name:name, Endpoint:documentEndpoint, Location:location}" -o table
+```
 
-# Confirm the RBAC role is assigned (Option B only)
+**Step 6 — Confirm the RBAC role is assigned** (Option B only):
+
+```bash
 az cosmosdb sql role assignment list \
   --account-name "$COSMOS_ACCOUNT" --resource-group "$COSMOS_RG" \
   --query "[].{Role:roleDefinitionId, Principal:principalId}" -o table
 ```
 
-**Windows (PowerShell)** (paste the whole block — you will be prompted for the account name):
+---
+
+**Windows (PowerShell)**
+
+> Run the following steps **in order** in the same terminal.
+
+**Step 1 — List your Cosmos DB accounts:**
+
 ```powershell
 az resource list --resource-type Microsoft.DocumentDB/databaseAccounts `
   --query "[].{Name:name, ResourceGroup:resourceGroup}" -o table
+```
+
+**Step 2 — Enter your account name:**
+
+```powershell
 $COSMOS_ACCOUNT = Read-Host "Cosmos DB account name"
-$COSMOS_RG      = (az resource list `
+```
+
+**Step 3 — Fetch the resource group:**
+
+```powershell
+$COSMOS_RG = (az resource list `
   --resource-type Microsoft.DocumentDB/databaseAccounts `
   --query "[?name=='$COSMOS_ACCOUNT'].resourceGroup" -o tsv)
+```
 
+**Step 4 — Confirm signed in and on the right subscription:**
+
+```powershell
 az account show --query "{Name:name, SubscriptionID:id, TenantID:tenantId}" -o table
+```
+
+**Step 5 — Confirm the Cosmos DB account is reachable:**
+
+```powershell
 az cosmosdb show --name $COSMOS_ACCOUNT --resource-group $COSMOS_RG `
   --query "{Name:name, Endpoint:documentEndpoint, Location:location}" -o table
+```
+
+**Step 6 — Confirm the RBAC role is assigned** (Option B only):
+
+```powershell
 az cosmosdb sql role assignment list `
   --account-name $COSMOS_ACCOUNT --resource-group $COSMOS_RG `
   --query "[].{Role:roleDefinitionId, Principal:principalId}" -o table
